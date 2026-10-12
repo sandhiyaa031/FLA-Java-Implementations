@@ -32,8 +32,6 @@ FLA_Project/
 │   └── Util.java              Small shared helpers
 ├── samples/                   Ready-made input files (2–3 per task)
 ├── sample_output/             The output of every program on every sample
-├── run_all.bat                Compile and run all samples (Windows)
-├── run_all.sh                 Compile and run all samples (Linux / macOS)
 └── README.md
 ```
 
