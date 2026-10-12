@@ -1,0 +1,132 @@
+======================================================================
+  TASK 5: PDA SIMULATION
+  Simulates a (possibly nondeterministic) pushdown automaton with its stack.
+======================================================================
+Reading input from file: samples/5b_pda_even_palindromes.txt
+Enter the states (separated by spaces): q0 q1 q2
+Enter the input alphabet (single characters): a b
+Enter the stack alphabet (single characters): a b Z
+Enter the start state: q0
+Enter the initial stack symbol: Z
+Enter the final states ('none' if there are none): q2
+Accept by final state or by empty stack? (F / E): F
+  transition: q0 a Z q0 aZ
+  transition: q0 b Z q0 bZ
+  transition: q0 a a q0 aa
+  transition: q0 a b q0 ab
+  transition: q0 b a q0 ba
+  transition: q0 b b q0 bb
+  transition: q0 eps Z q1 Z
+  transition: q0 eps a q1 a
+  transition: q0 eps b q1 b
+  transition: q1 a a q1 eps
+  transition: q1 b b q1 eps
+  transition: q1 eps Z q2 Z
+  transition: end
+
+---- The PDA ----
+M = (Q, Sigma, Gamma, delta, q0, z, F) where
+  Q     = {q0, q1, q2}
+  Sigma = {a, b}   (input alphabet)
+  Gamma = {a, b, Z}   (stack alphabet)
+  q0    = q0
+  z     = Z   (initial stack symbol)
+  F     = {q2}
+  Acceptance: by FINAL STATE (input fully read and the PDA is in a state of F)
+  Transitions (push strings are written with the top of the stack on the left):
+  #  | Transition                  | Meaning
+  ---+-----------------------------+--------------------------------------------------------
+  1  | delta(q0, a, Z) = (q0, aZ)  | read a, pop Z, push aZ, go to q0
+  2  | delta(q0, b, Z) = (q0, bZ)  | read b, pop Z, push bZ, go to q0
+  3  | delta(q0, a, a) = (q0, aa)  | read a, pop a, push aa, go to q0
+  4  | delta(q0, a, b) = (q0, ab)  | read a, pop b, push ab, go to q0
+  5  | delta(q0, b, a) = (q0, ba)  | read b, pop a, push ba, go to q0
+  6  | delta(q0, b, b) = (q0, bb)  | read b, pop b, push bb, go to q0
+  7  | delta(q0, eps, Z) = (q1, Z) | read nothing, pop Z, push Z (stack unchanged), go to q1
+  8  | delta(q0, eps, a) = (q1, a) | read nothing, pop a, push a (stack unchanged), go to q1
+  9  | delta(q0, eps, b) = (q1, b) | read nothing, pop b, push b (stack unchanged), go to q1
+  10 | delta(q1, a, a) = (q1, eps) | read a, pop a, push nothing, go to q1
+  11 | delta(q1, b, b) = (q1, eps) | read b, pop b, push nothing, go to q1
+  12 | delta(q1, eps, Z) = (q2, Z) | read nothing, pop Z, push Z (stack unchanged), go to q2
+  This PDA is NONDETERMINISTIC: moves #1 and #7 can both apply in the same situation. (The simulation tries every choice.)
+
+Enter an input string ('eps' = empty string, 'end' to stop): abba
+
+---- Simulating the PDA on w = "abba" ----
+  Accepting computation found (6 move(s)).
+  Stack is shown with its TOP on the LEFT.
+  Step | Move used                       | Stack operation                               | State | Unread input | Stack
+  -----+---------------------------------+-----------------------------------------------+-------+--------------+------
+  0    | (start)                         | -                                             | q0    | abba         | Z
+  1    | #1 delta(q0, a, Z) = (q0, aZ)   | read a, pop Z, push aZ                        | q0    | bba          | aZ
+  2    | #5 delta(q0, b, a) = (q0, ba)   | read b, pop a, push ba                        | q0    | ba           | baZ
+  3    | #9 delta(q0, eps, b) = (q1, b)  | read nothing, pop b, push b (stack unchanged) | q1    | ba           | baZ
+  4    | #11 delta(q1, b, b) = (q1, eps) | read b, pop b, push nothing                   | q1    | a            | aZ
+  5    | #10 delta(q1, a, a) = (q1, eps) | read a, pop a, push nothing                   | q1    | eps          | Z
+  6    | #12 delta(q1, eps, Z) = (q2, Z) | read nothing, pop Z, push Z (stack unchanged) | q2    | eps          | Z
+  Instantaneous descriptions:
+    (q0, abba, Z) |- (q0, bba, aZ) |- (q0, ba, baZ) |- (q1, ba, baZ) |- (q1, a, aZ) |- (q1, eps, Z)
+    |- (q2, eps, Z)
+  The input is completely read and the PDA is in final state q2.
+  (14 configuration(s) explored.)
+  Result: "abba" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): abaaba
+
+---- Simulating the PDA on w = "abaaba" ----
+  Accepting computation found (8 move(s)).
+  Stack is shown with its TOP on the LEFT.
+  Step | Move used                       | Stack operation                               | State | Unread input | Stack
+  -----+---------------------------------+-----------------------------------------------+-------+--------------+------
+  0    | (start)                         | -                                             | q0    | abaaba       | Z
+  1    | #1 delta(q0, a, Z) = (q0, aZ)   | read a, pop Z, push aZ                        | q0    | baaba        | aZ
+  2    | #5 delta(q0, b, a) = (q0, ba)   | read b, pop a, push ba                        | q0    | aaba         | baZ
+  3    | #4 delta(q0, a, b) = (q0, ab)   | read a, pop b, push ab                        | q0    | aba          | abaZ
+  4    | #8 delta(q0, eps, a) = (q1, a)  | read nothing, pop a, push a (stack unchanged) | q1    | aba          | abaZ
+  5    | #10 delta(q1, a, a) = (q1, eps) | read a, pop a, push nothing                   | q1    | ba           | baZ
+  6    | #11 delta(q1, b, b) = (q1, eps) | read b, pop b, push nothing                   | q1    | a            | aZ
+  7    | #10 delta(q1, a, a) = (q1, eps) | read a, pop a, push nothing                   | q1    | eps          | Z
+  8    | #12 delta(q1, eps, Z) = (q2, Z) | read nothing, pop Z, push Z (stack unchanged) | q2    | eps          | Z
+  Instantaneous descriptions:
+    (q0, abaaba, Z) |- (q0, baaba, aZ) |- (q0, aaba, baZ) |- (q0, aba, abaZ) |- (q1, aba, abaZ)
+    |- (q1, ba, baZ) |- (q1, a, aZ) |- (q1, eps, Z) |- (q2, eps, Z)
+  The input is completely read and the PDA is in final state q2.
+  (19 configuration(s) explored.)
+  Result: "abaaba" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): eps
+
+---- Simulating the PDA on w = eps (the empty string) ----
+  Accepting computation found (2 move(s)).
+  Stack is shown with its TOP on the LEFT.
+  Step | Move used                       | Stack operation                               | State | Unread input | Stack
+  -----+---------------------------------+-----------------------------------------------+-------+--------------+------
+  0    | (start)                         | -                                             | q0    | eps          | Z
+  1    | #7 delta(q0, eps, Z) = (q1, Z)  | read nothing, pop Z, push Z (stack unchanged) | q1    | eps          | Z
+  2    | #12 delta(q1, eps, Z) = (q2, Z) | read nothing, pop Z, push Z (stack unchanged) | q2    | eps          | Z
+  Instantaneous descriptions:
+    (q0, eps, Z) |- (q1, eps, Z) |- (q2, eps, Z)
+  The input is completely read and the PDA is in final state q2.
+  (3 configuration(s) explored.)
+  Result: eps (the empty string) is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): aba
+
+---- Simulating the PDA on w = "aba" ----
+  Every possible computation was explored (9 configuration(s)).
+  The farthest any computation got was 3 of 3 input symbol(s) ("aba" read).
+  None of them ends with the input fully read and the PDA in a final state.
+  Result: "aba" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): abab
+
+---- Simulating the PDA on w = "abab" ----
+  Every possible computation was explored (11 configuration(s)).
+  The farthest any computation got was 4 of 4 input symbol(s) ("abab" read).
+  None of them ends with the input fully read and the PDA in a final state.
+  Result: "abab" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): end
+
+---- Summary ----
+  Strings tested: 5, accepted: 3, not accepted: 2

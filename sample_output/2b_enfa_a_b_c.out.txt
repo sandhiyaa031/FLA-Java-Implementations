@@ -1,0 +1,118 @@
+======================================================================
+  TASK 2: NFA TO DFA CONVERSION
+  Builds an equivalent DFA from an NFA using the subset construction.
+======================================================================
+Reading input from file: samples/2b_enfa_a_b_c.txt
+Enter the states (separated by spaces): q0 q1 q2
+Enter the input alphabet (single characters, do not include eps): a b c
+Enter the start state: q0
+Enter the final states ('none' if there are none): q2
+  transition: q0 a q0
+  transition: q0 eps q1
+  transition: q1 b q1
+  transition: q1 eps q2
+  transition: q2 c q2
+  transition: end
+
+---- The NFA ----
+N = (Q, Sigma, delta, q0, F) where
+  Q     = {q0, q1, q2}   (3 states)
+  Sigma = {a, b, c}
+  q0    = q0
+  F     = {q2}
+  delta (transition table; each entry is a SET of states):
+     | State | a    | b    | c    | eps
+  ---+-------+------+------+------+-----
+  -> | q0    | {q0} | {}   | {}   | {q1}
+     | q1    | {}   | {q1} | {}   | {q2}
+  *  | q2    | {}   | {}   | {q2} | {}
+  (-> marks the start state, * marks a final state, {} is the empty set)
+
+---- Step 1: epsilon-closure of every NFA state ----
+  epsilon-closure(q) = q together with every state reachable from q
+  using epsilon-transitions only.
+  State q | epsilon-closure(q)
+  --------+-------------------
+  q0      | {q0,q1,q2}
+  q1      | {q1,q2}
+  q2      | {q2}
+
+---- Step 2: subset construction ----
+  Start state D0 = epsilon-closure({q0}) = {q0,q1,q2}
+
+  Processing D0 = {q0,q1,q2}:
+    on 'a': move({q0,q1,q2}, a) = {q0}, epsilon-closure = {q0,q1,q2}  ->  D0
+    on 'b': move({q0,q1,q2}, b) = {q1}, epsilon-closure = {q1,q2}  ->  D1  (new state)
+    on 'c': move({q0,q1,q2}, c) = {q2}, epsilon-closure = {q2}  ->  D2  (new state)
+
+  Processing D1 = {q1,q2}:
+    on 'a': move({q1,q2}, a) = {}, epsilon-closure = {}  ->  D3  (new state)  [the empty set: a dead state]
+    on 'b': move({q1,q2}, b) = {q1}, epsilon-closure = {q1,q2}  ->  D1
+    on 'c': move({q1,q2}, c) = {q2}, epsilon-closure = {q2}  ->  D2
+
+  Processing D2 = {q2}:
+    on 'a': move({q2}, a) = {}, epsilon-closure = {}  ->  D3
+    on 'b': move({q2}, b) = {}, epsilon-closure = {}  ->  D3
+    on 'c': move({q2}, c) = {q2}, epsilon-closure = {q2}  ->  D2
+
+  Processing D3 = {}:
+    on 'a': move({}, a) = {}, epsilon-closure = {}  ->  D3
+    on 'b': move({}, b) = {}, epsilon-closure = {}  ->  D3
+    on 'c': move({}, c) = {}, epsilon-closure = {}  ->  D3
+
+---- Step 3: final states of the DFA ----
+  A DFA state is final if its subset contains an NFA final state {q2}.
+  D0 = {q0,q1,q2} is final (contains q2)
+  D1 = {q1,q2} is final (contains q2)
+  D2 = {q2} is final (contains q2)
+
+---- Step 4: the equivalent DFA ----
+      | DFA state | NFA states | a  | b  | c
+  ----+-----------+------------+----+----+---
+  ->* | D0        | {q0,q1,q2} | D0 | D1 | D2
+  *   | D1        | {q1,q2}    | D3 | D1 | D2
+  *   | D2        | {q2}       | D3 | D3 | D2
+      | D3        | {}         | D3 | D3 | D3
+  (-> marks the start state, * marks a final state)
+
+D = (Q, Sigma, delta, q0, F) where
+  Q     = {D0, D1, D2, D3}   (4 states)
+  Sigma = {a, b, c}
+  q0    = D0
+  F     = {D0, D1, D2}
+  delta (transition table):
+      | State | a  | b  | c
+  ----+-------+----+----+---
+  ->* | D0    | D0 | D1 | D2
+  *   | D1    | D3 | D1 | D2
+  *   | D2    | D3 | D3 | D2
+      | D3    | D3 | D3 | D3
+  (-> marks the start state, * marks a final state)
+
+  The NFA has 3 states; the DFA has 4 reachable states (the subset construction can give at most 2^3 = 8).
+  D3 = {} is the dead (trap) state: once entered, the DFA never accepts.
+
+---- Verification: L(NFA) = L(DFA)? ----
+  Tested all 88573 strings of length 0 to 10: the NFA and the DFA accept exactly the same ones.
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): aabcc
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --a--> D0 --a--> D0 --b--> D1 --c--> D2 --c--> D2
+  Result: "aabcc" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): abc
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --a--> D0 --b--> D1 --c--> D2
+  Result: "abc" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): acb
+  NFA: REJECTED   DFA: REJECTED   DFA path: D0 --a--> D0 --c--> D2 --b--> D3
+  Result: "acb" is REJECTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): eps
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0
+  Result: eps (the empty string) is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): ccc
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --c--> D2 --c--> D2 --c--> D2
+  Result: "ccc" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): end

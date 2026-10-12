@@ -1,0 +1,99 @@
+======================================================================
+  TASK 1: DFA SIMULATION
+  Decides whether each input string is accepted or rejected by a DFA.
+======================================================================
+Reading input from file: samples/1b_dfa_divisible_by_3.txt
+Enter the states (separated by spaces): r0 r1 r2
+Enter the input alphabet (single characters): 0 1
+Enter the start state: r0
+Enter the final states ('none' if there are none): r0
+  transition: r0 0 r0
+  transition: r0 1 r1
+  transition: r1 0 r2
+  transition: r1 1 r0
+  transition: r2 0 r1
+  transition: r2 1 r2
+  transition: end
+
+---- The DFA ----
+M = (Q, Sigma, delta, q0, F) where
+  Q     = {r0, r1, r2}   (3 states)
+  Sigma = {0, 1}
+  q0    = r0
+  F     = {r0}
+  delta (transition table):
+      | State | 0  | 1
+  ----+-------+----+---
+  ->* | r0    | r0 | r1
+      | r1    | r2 | r0
+      | r2    | r1 | r2
+  (-> marks the start state, * marks a final state)
+
+Enter an input string ('eps' = empty string, 'end' to stop): 110
+
+---- Simulating M on w = "110", |w| = 3 ----
+  Step | Current state | Symbol read | Transition        | Next state
+  -----+---------------+-------------+-------------------+-----------
+  1    | r0            | 1           | delta(r0, 1) = r1 | r1
+  2    | r1            | 1           | delta(r1, 1) = r0 | r0
+  3    | r0            | 0           | delta(r0, 0) = r0 | r0
+  Path: r0 --1--> r1 --1--> r0 --0--> r0
+  delta*(r0, 110) = r0, which is a final state (F = {r0}).
+  Result: "110" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): 1001
+
+---- Simulating M on w = "1001", |w| = 4 ----
+  Step | Current state | Symbol read | Transition        | Next state
+  -----+---------------+-------------+-------------------+-----------
+  1    | r0            | 1           | delta(r0, 1) = r1 | r1
+  2    | r1            | 0           | delta(r1, 0) = r2 | r2
+  3    | r2            | 0           | delta(r2, 0) = r1 | r1
+  4    | r1            | 1           | delta(r1, 1) = r0 | r0
+  Path: r0 --1--> r1 --0--> r2 --0--> r1 --1--> r0
+  delta*(r0, 1001) = r0, which is a final state (F = {r0}).
+  Result: "1001" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): 1011
+
+---- Simulating M on w = "1011", |w| = 4 ----
+  Step | Current state | Symbol read | Transition        | Next state
+  -----+---------------+-------------+-------------------+-----------
+  1    | r0            | 1           | delta(r0, 1) = r1 | r1
+  2    | r1            | 0           | delta(r1, 0) = r2 | r2
+  3    | r2            | 1           | delta(r2, 1) = r2 | r2
+  4    | r2            | 1           | delta(r2, 1) = r2 | r2
+  Path: r0 --1--> r1 --0--> r2 --1--> r2 --1--> r2
+  delta*(r0, 1011) = r2, which is NOT a final state (F = {r0}).
+  Result: "1011" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): 10101
+
+---- Simulating M on w = "10101", |w| = 5 ----
+  Step | Current state | Symbol read | Transition        | Next state
+  -----+---------------+-------------+-------------------+-----------
+  1    | r0            | 1           | delta(r0, 1) = r1 | r1
+  2    | r1            | 0           | delta(r1, 0) = r2 | r2
+  3    | r2            | 1           | delta(r2, 1) = r2 | r2
+  4    | r2            | 0           | delta(r2, 0) = r1 | r1
+  5    | r1            | 1           | delta(r1, 1) = r0 | r0
+  Path: r0 --1--> r1 --0--> r2 --1--> r2 --0--> r1 --1--> r0
+  delta*(r0, 10101) = r0, which is a final state (F = {r0}).
+  Result: "10101" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): 100
+
+---- Simulating M on w = "100", |w| = 3 ----
+  Step | Current state | Symbol read | Transition        | Next state
+  -----+---------------+-------------+-------------------+-----------
+  1    | r0            | 1           | delta(r0, 1) = r1 | r1
+  2    | r1            | 0           | delta(r1, 0) = r2 | r2
+  3    | r2            | 0           | delta(r2, 0) = r1 | r1
+  Path: r0 --1--> r1 --0--> r2 --0--> r1
+  delta*(r0, 100) = r1, which is NOT a final state (F = {r0}).
+  Result: "100" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): end
+
+---- Summary ----
+  Strings tested: 5, accepted: 3, rejected: 2

@@ -1,0 +1,93 @@
+======================================================================
+  TASK 5: PDA SIMULATION
+  Simulates a (possibly nondeterministic) pushdown automaton with its stack.
+======================================================================
+Reading input from file: samples/5c_pda_balanced_parentheses.txt
+Enter the states (separated by spaces): q
+Enter the input alphabet (single characters): ( )
+Enter the stack alphabet (single characters): ( Z
+Enter the start state: q
+Enter the initial stack symbol: Z
+Enter the final states ('none' if there are none): none
+Accept by final state or by empty stack? (F / E): E
+  transition: q ( Z q (Z
+  transition: q ( ( q ((
+  transition: q ) ( q eps
+  transition: q eps Z q eps
+  transition: end
+
+---- The PDA ----
+M = (Q, Sigma, Gamma, delta, q0, z, F) where
+  Q     = {q}
+  Sigma = {(, )}   (input alphabet)
+  Gamma = {(, Z}   (stack alphabet)
+  q0    = q
+  z     = Z   (initial stack symbol)
+  F     = {}
+  Acceptance: by EMPTY STACK (input fully read and the stack is empty)
+  Transitions (push strings are written with the top of the stack on the left):
+  # | Transition                  | Meaning
+  --+-----------------------------+-------------------------------------------
+  1 | delta(q, (, Z) = (q, (Z)    | read (, pop Z, push (Z, go to q
+  2 | delta(q, (, () = (q, (()    | read (, pop (, push ((, go to q
+  3 | delta(q, ), () = (q, eps)   | read ), pop (, push nothing, go to q
+  4 | delta(q, eps, Z) = (q, eps) | read nothing, pop Z, push nothing, go to q
+  This PDA is NONDETERMINISTIC: moves #1 and #4 can both apply in the same situation. (The simulation tries every choice.)
+
+Enter an input string ('eps' = empty string, 'end' to stop): (())()
+
+---- Simulating the PDA on w = "(())()" ----
+  Accepting computation found (7 move(s)).
+  Stack is shown with its TOP on the LEFT.
+  Step | Move used                      | Stack operation                   | State | Unread input | Stack
+  -----+--------------------------------+-----------------------------------+-------+--------------+------
+  0    | (start)                        | -                                 | q     | (())()       | Z
+  1    | #1 delta(q, (, Z) = (q, (Z)    | read (, pop Z, push (Z            | q     | ())()        | (Z
+  2    | #2 delta(q, (, () = (q, (()    | read (, pop (, push ((            | q     | ))()         | ((Z
+  3    | #3 delta(q, ), () = (q, eps)   | read ), pop (, push nothing       | q     | )()          | (Z
+  4    | #3 delta(q, ), () = (q, eps)   | read ), pop (, push nothing       | q     | ()           | Z
+  5    | #1 delta(q, (, Z) = (q, (Z)    | read (, pop Z, push (Z            | q     | )            | (Z
+  6    | #3 delta(q, ), () = (q, eps)   | read ), pop (, push nothing       | q     | eps          | Z
+  7    | #4 delta(q, eps, Z) = (q, eps) | read nothing, pop Z, push nothing | q     | eps          | eps
+  Instantaneous descriptions:
+    (q, (())(), Z) |- (q, ())(), (Z) |- (q, ))(), ((Z) |- (q, )(), (Z) |- (q, (), Z) |- (q, ), (Z)
+    |- (q, eps, Z) |- (q, eps, eps)
+  The input is completely read and the stack is empty.
+  (10 configuration(s) explored.)
+  Result: "(())()" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): ()(
+
+---- Simulating the PDA on w = "()(" ----
+  Every possible computation was explored (6 configuration(s)).
+  The farthest any computation got was 3 of 3 input symbol(s) ("()(" read).
+  None of them ends with the input fully read and the stack empty.
+  Result: "()(" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): ())(
+
+---- Simulating the PDA on w = "())(" ----
+  Every possible computation was explored (5 configuration(s)).
+  The farthest any computation got was 2 of 4 input symbol(s) ("()" read).
+  None of them ends with the input fully read and the stack empty.
+  Result: "())(" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): eps
+
+---- Simulating the PDA on w = eps (the empty string) ----
+  Accepting computation found (1 move(s)).
+  Stack is shown with its TOP on the LEFT.
+  Step | Move used                      | Stack operation                   | State | Unread input | Stack
+  -----+--------------------------------+-----------------------------------+-------+--------------+------
+  0    | (start)                        | -                                 | q     | eps          | Z
+  1    | #4 delta(q, eps, Z) = (q, eps) | read nothing, pop Z, push nothing | q     | eps          | eps
+  Instantaneous descriptions:
+    (q, eps, Z) |- (q, eps, eps)
+  The input is completely read and the stack is empty.
+  (2 configuration(s) explored.)
+  Result: eps (the empty string) is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): end
+
+---- Summary ----
+  Strings tested: 4, accepted: 2, not accepted: 2

@@ -1,0 +1,16 @@
+# TASK 2 sample: NFA over {0, 1} accepting the strings that end in "01".
+# delta(q0, 0) = {q0, q1} is the nondeterministic choice: "guess" that this 0 starts the final "01".
+q0 q1 q2
+0 1
+q0
+q2
+q0 0 q0 q1
+q0 1 q0
+q1 1 q2
+end
+# Strings to test on both the NFA and the DFA
+1001
+0101
+0110
+eps
+end

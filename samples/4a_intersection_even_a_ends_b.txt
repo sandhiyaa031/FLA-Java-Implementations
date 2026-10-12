@@ -1,0 +1,29 @@
+# TASK 4 sample.
+# DFA 1: strings over {a, b} with an EVEN number of a's (E = even so far, O = odd so far).
+E O
+a b
+E
+E
+E a O
+E b E
+O a E
+O b O
+end
+# DFA 2: strings over {a, b} that END WITH b (Y = last symbol was b).
+X Y
+a b
+X
+Y
+X a X
+X b Y
+Y a X
+Y b Y
+end
+# Strings to test: in L1 intersect L2 exactly when both DFAs accept
+abab
+aab
+ab
+aa
+b
+eps
+end

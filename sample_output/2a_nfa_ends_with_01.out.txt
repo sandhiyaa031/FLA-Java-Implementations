@@ -1,0 +1,90 @@
+======================================================================
+  TASK 2: NFA TO DFA CONVERSION
+  Builds an equivalent DFA from an NFA using the subset construction.
+======================================================================
+Reading input from file: samples/2a_nfa_ends_with_01.txt
+Enter the states (separated by spaces): q0 q1 q2
+Enter the input alphabet (single characters, do not include eps): 0 1
+Enter the start state: q0
+Enter the final states ('none' if there are none): q2
+  transition: q0 0 q0 q1
+  transition: q0 1 q0
+  transition: q1 1 q2
+  transition: end
+
+---- The NFA ----
+N = (Q, Sigma, delta, q0, F) where
+  Q     = {q0, q1, q2}   (3 states)
+  Sigma = {0, 1}
+  q0    = q0
+  F     = {q2}
+  delta (transition table; each entry is a SET of states):
+     | State | 0       | 1
+  ---+-------+---------+-----
+  -> | q0    | {q0,q1} | {q0}
+     | q1    | {}      | {q2}
+  *  | q2    | {}      | {}
+  (-> marks the start state, * marks a final state, {} is the empty set)
+
+---- Step 1: subset construction ----
+  Start state D0 = {q0}
+
+  Processing D0 = {q0}:
+    on '0': move({q0}, 0) = {q0,q1}  ->  D1  (new state)
+    on '1': move({q0}, 1) = {q0}  ->  D0
+
+  Processing D1 = {q0,q1}:
+    on '0': move({q0,q1}, 0) = {q0,q1}  ->  D1
+    on '1': move({q0,q1}, 1) = {q0,q2}  ->  D2  (new state)
+
+  Processing D2 = {q0,q2}:
+    on '0': move({q0,q2}, 0) = {q0,q1}  ->  D1
+    on '1': move({q0,q2}, 1) = {q0}  ->  D0
+
+---- Step 2: final states of the DFA ----
+  A DFA state is final if its subset contains an NFA final state {q2}.
+  D2 = {q0,q2} is final (contains q2)
+
+---- Step 3: the equivalent DFA ----
+     | DFA state | NFA states | 0  | 1
+  ---+-----------+------------+----+---
+  -> | D0        | {q0}       | D1 | D0
+     | D1        | {q0,q1}    | D1 | D2
+  *  | D2        | {q0,q2}    | D1 | D0
+  (-> marks the start state, * marks a final state)
+
+D = (Q, Sigma, delta, q0, F) where
+  Q     = {D0, D1, D2}   (3 states)
+  Sigma = {0, 1}
+  q0    = D0
+  F     = {D2}
+  delta (transition table):
+     | State | 0  | 1
+  ---+-------+----+---
+  -> | D0    | D1 | D0
+     | D1    | D1 | D2
+  *  | D2    | D1 | D0
+  (-> marks the start state, * marks a final state)
+
+  The NFA has 3 states; the DFA has 3 reachable states (the subset construction can give at most 2^3 = 8).
+
+---- Verification: L(NFA) = L(DFA)? ----
+  Tested all 32767 strings of length 0 to 14: the NFA and the DFA accept exactly the same ones.
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): 1001
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --1--> D0 --0--> D1 --0--> D1 --1--> D2
+  Result: "1001" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): 0101
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --0--> D1 --1--> D2 --0--> D1 --1--> D2
+  Result: "0101" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): 0110
+  NFA: REJECTED   DFA: REJECTED   DFA path: D0 --0--> D1 --1--> D2 --1--> D0 --0--> D1
+  Result: "0110" is REJECTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): eps
+  NFA: REJECTED   DFA: REJECTED   DFA path: D0
+  Result: eps (the empty string) is REJECTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): end

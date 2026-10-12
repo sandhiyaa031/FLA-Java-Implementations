@@ -1,0 +1,26 @@
+# TASK 3 sample: a DFA with an unreachable state (G) and equivalent states.
+# It accepts the binary strings that contain exactly one 1.
+# Expected result: {A,B}, {C,D,E}, F  (3 states); G is removed as unreachable.
+A B C D E F G
+0 1
+A
+C D E
+A 0 B
+A 1 C
+B 0 A
+B 1 D
+C 0 E
+C 1 F
+D 0 E
+D 1 F
+E 0 E
+E 1 F
+F 0 F
+F 1 F
+G 0 F
+G 1 E
+end
+0100
+11
+000
+end

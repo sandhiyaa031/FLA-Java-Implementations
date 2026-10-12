@@ -1,0 +1,19 @@
+# TASK 5 sample: PDA for balanced parentheses, accepting by EMPTY STACK.
+# Push '(' for every '(' read, pop one for every ')', and finally pop the bottom marker Z.
+q
+( )
+( Z
+q
+Z
+none
+E
+q ( Z q (Z
+q ( ( q ((
+q ) ( q eps
+q eps Z q eps
+end
+(())()
+()(
+())(
+eps
+end

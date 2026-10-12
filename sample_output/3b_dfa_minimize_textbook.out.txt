@@ -1,0 +1,129 @@
+======================================================================
+  TASK 3: DFA STATE REDUCTION (MINIMIZATION)
+  Finds and merges equivalent states to get the minimal DFA.
+======================================================================
+Reading input from file: samples/3b_dfa_minimize_textbook.txt
+Enter the states (separated by spaces): A B C D E F G H
+Enter the input alphabet (single characters): 0 1
+Enter the start state: A
+Enter the final states ('none' if there are none): C
+  transition: A 0 B
+  transition: A 1 F
+  transition: B 0 G
+  transition: B 1 C
+  transition: C 0 A
+  transition: C 1 C
+  transition: D 0 C
+  transition: D 1 G
+  transition: E 0 H
+  transition: E 1 F
+  transition: F 0 C
+  transition: F 1 G
+  transition: G 0 G
+  transition: G 1 E
+  transition: H 0 G
+  transition: H 1 C
+  transition: end
+
+---- The given DFA ----
+M = (Q, Sigma, delta, q0, F) where
+  Q     = {A, B, C, D, E, F, G, H}   (8 states)
+  Sigma = {0, 1}
+  q0    = A
+  F     = {C}
+  delta (transition table):
+     | State | 0 | 1
+  ---+-------+---+--
+  -> | A     | B | F
+     | B     | G | C
+  *  | C     | A | C
+     | D     | C | G
+     | E     | H | F
+     | F     | C | G
+     | G     | G | E
+     | H     | G | C
+  (-> marks the start state, * marks a final state)
+
+---- Step 1: remove unreachable states ----
+  States reachable from A: {A, B, F, G, C, E, H}
+  Removed (no path from the start state): {D}
+
+---- Step 2: table-filling algorithm (mark distinguishable pairs) ----
+  Round 0: mark every pair where one state is final and the other is not.
+    marked: (A,C) (B,C) (C,E) (C,F) (C,G) (C,H)
+  Round 1:
+    mark (A,B): on '1' they go to (C,F), which is already marked
+    mark (A,F): on '0' they go to (B,C), which is already marked
+    mark (A,H): on '1' they go to (C,F), which is already marked
+    mark (B,E): on '1' they go to (C,F), which is already marked
+    mark (B,F): on '0' they go to (C,G), which is already marked
+    mark (B,G): on '1' they go to (C,E), which is already marked
+    mark (E,F): on '0' they go to (C,H), which is already marked
+    mark (E,H): on '1' they go to (C,F), which is already marked
+    mark (F,G): on '0' they go to (C,G), which is already marked
+    mark (F,H): on '0' they go to (C,G), which is already marked
+    mark (G,H): on '1' they go to (C,E), which is already marked
+  Round 2:
+    mark (A,G): on '0' they go to (B,G), which is already marked
+    mark (E,G): on '0' they go to (G,H), which is already marked
+  Round 3: no new pair can be marked, so the algorithm stops.
+
+  Final table (X = distinguishable, = = equivalent; number = round it was marked):
+    | A  | B  | C  | E  | F  | G
+  --+----+----+----+----+----+---
+  B | X1 |    |    |    |    |
+  C | X0 | X0 |    |    |    |
+  E | =  | X1 | X0 |    |    |
+  F | X1 | X1 | X0 | X1 |    |
+  G | X2 | X1 | X0 | X2 | X1 |
+  H | X1 | =  | X0 | X1 | X1 | X1
+
+---- Step 3: equivalence classes (unmarked pairs are equivalent) ----
+  {A,E}   <- these states are equivalent and are merged
+  {B,H}   <- these states are equivalent and are merged
+  C   <- distinguishable from every other state
+  F   <- distinguishable from every other state
+  G   <- distinguishable from every other state
+
+  Cross-check with the partition-refinement method:
+    P0 = { {A,B,E,F,G,H}, {C} }
+    P1 = { {A,E,G}, {B,H}, {F}, {C} }
+    P2 = { {A,E}, {G}, {B,H}, {F}, {C} }
+    P3 = { {A,E}, {G}, {B,H}, {F}, {C} }
+    P3 = P2, so the partition is final.
+  The partition-refinement method gives the same classes. (cross-check passed)
+
+---- Step 4: the minimized DFA ----
+  Each class becomes one state; its transitions are those of any member
+  (all members agree, because they are equivalent).
+M' = (Q, Sigma, delta, q0, F) where
+  Q     = {{A,E}, {B,H}, C, F, G}   (5 states)
+  Sigma = {0, 1}
+  q0    = {A,E}
+  F     = {C}
+  delta (transition table):
+     | State | 0     | 1
+  ---+-------+-------+------
+  -> | {A,E} | {B,H} | F
+     | {B,H} | G     | C
+  *  | C     | {A,E} | C
+     | F     | C     | G
+     | G     | G     | {A,E}
+  (-> marks the start state, * marks a final state)
+
+  Number of states: 8 (original) -> 7 (after removing unreachable) -> 5 (minimized).
+
+---- Verification: L(M) = L(M')? ----
+  Every reachable pair of states (one from M, one from M') was checked:
+  no string is accepted by one machine and rejected by the other.
+  So L(M) = L(M'). States: 8 -> 5.
+
+Enter a string to test on both DFAs ('eps' = empty, 'end' to stop): 01
+  Original M: ACCEPTED   Minimized M': ACCEPTED
+  Result: "01" is ACCEPTED (both DFAs agree)
+
+Enter a string to test on both DFAs ('eps' = empty, 'end' to stop): 1001
+  Original M: REJECTED   Minimized M': REJECTED
+  Result: "1001" is REJECTED (both DFAs agree)
+
+Enter a string to test on both DFAs ('eps' = empty, 'end' to stop): end

@@ -1,0 +1,25 @@
+# TASK 5 sample: PDA for L = { a^n b^n : n >= 0 }, accepting by FINAL STATE.
+# q0 pushes one 'a' for every a read; q1 pops one 'a' for every b read;
+# when only Z is left the PDA moves to the final state q2.
+q0 q1 q2
+a b
+a Z
+q0
+Z
+q2
+F
+# state input pop next-state push   (push: leftmost symbol ends on top)
+q0 a Z q0 aZ
+q0 a a q0 aa
+q0 b a q1 eps
+q1 b a q1 eps
+q1 eps Z q2 Z
+q0 eps Z q2 Z
+end
+aabb
+aaabbb
+eps
+aab
+abb
+ba
+end

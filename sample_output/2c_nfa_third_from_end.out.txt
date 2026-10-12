@@ -1,0 +1,123 @@
+======================================================================
+  TASK 2: NFA TO DFA CONVERSION
+  Builds an equivalent DFA from an NFA using the subset construction.
+======================================================================
+Reading input from file: samples/2c_nfa_third_from_end.txt
+Enter the states (separated by spaces): p0 p1 p2 p3
+Enter the input alphabet (single characters, do not include eps): a b
+Enter the start state: p0
+Enter the final states ('none' if there are none): p3
+  transition: p0 a p0 p1
+  transition: p0 b p0
+  transition: p1 a p2
+  transition: p1 b p2
+  transition: p2 a p3
+  transition: p2 b p3
+  transition: end
+
+---- The NFA ----
+N = (Q, Sigma, delta, q0, F) where
+  Q     = {p0, p1, p2, p3}   (4 states)
+  Sigma = {a, b}
+  q0    = p0
+  F     = {p3}
+  delta (transition table; each entry is a SET of states):
+     | State | a       | b
+  ---+-------+---------+-----
+  -> | p0    | {p0,p1} | {p0}
+     | p1    | {p2}    | {p2}
+     | p2    | {p3}    | {p3}
+  *  | p3    | {}      | {}
+  (-> marks the start state, * marks a final state, {} is the empty set)
+
+---- Step 1: subset construction ----
+  Start state D0 = {p0}
+
+  Processing D0 = {p0}:
+    on 'a': move({p0}, a) = {p0,p1}  ->  D1  (new state)
+    on 'b': move({p0}, b) = {p0}  ->  D0
+
+  Processing D1 = {p0,p1}:
+    on 'a': move({p0,p1}, a) = {p0,p1,p2}  ->  D2  (new state)
+    on 'b': move({p0,p1}, b) = {p0,p2}  ->  D3  (new state)
+
+  Processing D2 = {p0,p1,p2}:
+    on 'a': move({p0,p1,p2}, a) = {p0,p1,p2,p3}  ->  D4  (new state)
+    on 'b': move({p0,p1,p2}, b) = {p0,p2,p3}  ->  D5  (new state)
+
+  Processing D3 = {p0,p2}:
+    on 'a': move({p0,p2}, a) = {p0,p1,p3}  ->  D6  (new state)
+    on 'b': move({p0,p2}, b) = {p0,p3}  ->  D7  (new state)
+
+  Processing D4 = {p0,p1,p2,p3}:
+    on 'a': move({p0,p1,p2,p3}, a) = {p0,p1,p2,p3}  ->  D4
+    on 'b': move({p0,p1,p2,p3}, b) = {p0,p2,p3}  ->  D5
+
+  Processing D5 = {p0,p2,p3}:
+    on 'a': move({p0,p2,p3}, a) = {p0,p1,p3}  ->  D6
+    on 'b': move({p0,p2,p3}, b) = {p0,p3}  ->  D7
+
+  Processing D6 = {p0,p1,p3}:
+    on 'a': move({p0,p1,p3}, a) = {p0,p1,p2}  ->  D2
+    on 'b': move({p0,p1,p3}, b) = {p0,p2}  ->  D3
+
+  Processing D7 = {p0,p3}:
+    on 'a': move({p0,p3}, a) = {p0,p1}  ->  D1
+    on 'b': move({p0,p3}, b) = {p0}  ->  D0
+
+---- Step 2: final states of the DFA ----
+  A DFA state is final if its subset contains an NFA final state {p3}.
+  D4 = {p0,p1,p2,p3} is final (contains p3)
+  D5 = {p0,p2,p3} is final (contains p3)
+  D6 = {p0,p1,p3} is final (contains p3)
+  D7 = {p0,p3} is final (contains p3)
+
+---- Step 3: the equivalent DFA ----
+     | DFA state | NFA states    | a  | b
+  ---+-----------+---------------+----+---
+  -> | D0        | {p0}          | D1 | D0
+     | D1        | {p0,p1}       | D2 | D3
+     | D2        | {p0,p1,p2}    | D4 | D5
+     | D3        | {p0,p2}       | D6 | D7
+  *  | D4        | {p0,p1,p2,p3} | D4 | D5
+  *  | D5        | {p0,p2,p3}    | D6 | D7
+  *  | D6        | {p0,p1,p3}    | D2 | D3
+  *  | D7        | {p0,p3}       | D1 | D0
+  (-> marks the start state, * marks a final state)
+
+D = (Q, Sigma, delta, q0, F) where
+  Q     = {D0, D1, D2, D3, D4, D5, D6, D7}   (8 states)
+  Sigma = {a, b}
+  q0    = D0
+  F     = {D4, D5, D6, D7}
+  delta (transition table):
+     | State | a  | b
+  ---+-------+----+---
+  -> | D0    | D1 | D0
+     | D1    | D2 | D3
+     | D2    | D4 | D5
+     | D3    | D6 | D7
+  *  | D4    | D4 | D5
+  *  | D5    | D6 | D7
+  *  | D6    | D2 | D3
+  *  | D7    | D1 | D0
+  (-> marks the start state, * marks a final state)
+
+  The NFA has 4 states; the DFA has 8 reachable states (the subset construction can give at most 2^4 = 16).
+
+---- Verification: L(NFA) = L(DFA)? ----
+  Tested all 32767 strings of length 0 to 14: the NFA and the DFA accept exactly the same ones.
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): abb
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --a--> D1 --b--> D3 --b--> D7
+  Result: "abb" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): baab
+  NFA: ACCEPTED   DFA: ACCEPTED   DFA path: D0 --b--> D0 --a--> D1 --a--> D2 --b--> D5
+  Result: "baab" is ACCEPTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): bbb
+  NFA: REJECTED   DFA: REJECTED   DFA path: D0 --b--> D0 --b--> D0 --b--> D0
+  Result: "bbb" is REJECTED (both machines agree)
+
+Enter a string to test on both machines ('eps' = empty, 'end' to stop): end

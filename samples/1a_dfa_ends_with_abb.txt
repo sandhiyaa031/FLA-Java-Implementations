@@ -1,0 +1,32 @@
+# TASK 1 sample: DFA over {a, b} that accepts the strings ending in "abb".
+# State meaning: A = no progress, B = seen "a", C = seen "ab", D = seen "abb".
+# Lines starting with # are comments. Every value is in the order the program asks for it.
+
+# States
+A B C D
+# Input alphabet
+a b
+# Start state
+A
+# Final states
+D
+# Transitions: state symbol next-state, then 'end'
+A a B
+A b A
+B a B
+B b C
+C a B
+C b D
+D a B
+D b A
+end
+
+# Strings to test ('eps' = the empty string)
+abb
+aabb
+babb
+abba
+ab
+eps
+abcb
+end

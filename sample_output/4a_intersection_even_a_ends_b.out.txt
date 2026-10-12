@@ -1,0 +1,116 @@
+======================================================================
+  TASK 4: INTERSECTION OF TWO DFAs
+  Builds a DFA for L = L1 intersect L2 with the product construction.
+======================================================================
+Reading input from file: samples/4a_intersection_even_a_ends_b.txt
+[DFA 1] Enter the states (separated by spaces): E O
+[DFA 1] Enter the input alphabet (single characters): a b
+[DFA 1] Enter the start state: E
+[DFA 1] Enter the final states ('none' if there are none): E
+[DFA 1]   transition: E a O
+[DFA 1]   transition: E b E
+[DFA 1]   transition: O a E
+[DFA 1]   transition: O b O
+[DFA 1]   transition: end
+[DFA 2] Enter the states (separated by spaces): X Y
+[DFA 2] Enter the input alphabet (single characters): a b
+[DFA 2] Enter the start state: X
+[DFA 2] Enter the final states ('none' if there are none): Y
+[DFA 2]   transition: X a X
+[DFA 2]   transition: X b Y
+[DFA 2]   transition: Y a X
+[DFA 2]   transition: Y b Y
+[DFA 2]   transition: end
+
+---- DFA 1 ----
+M1 = (Q, Sigma, delta, q0, F) where
+  Q     = {E, O}   (2 states)
+  Sigma = {a, b}
+  q0    = E
+  F     = {E}
+  delta (transition table):
+      | State | a | b
+  ----+-------+---+--
+  ->* | E     | O | E
+      | O     | E | O
+  (-> marks the start state, * marks a final state)
+
+---- DFA 2 ----
+M2 = (Q, Sigma, delta, q0, F) where
+  Q     = {X, Y}   (2 states)
+  Sigma = {a, b}
+  q0    = X
+  F     = {Y}
+  delta (transition table):
+     | State | a | b
+  ---+-------+---+--
+  -> | X     | X | Y
+  *  | Y     | X | Y
+  (-> marks the start state, * marks a final state)
+
+---- Step 1: prepare the two DFAs ----
+  Both DFAs use the alphabet {a, b}.
+  Both DFAs are complete, so no changes are needed.
+
+---- Step 2: product construction ----
+  Start state: (E, X)
+  Rule: delta((p, q), x) = (delta1(p, x), delta2(q, x))
+    delta((E,X), a) = (delta1(E, a), delta2(X, a)) = (O,X)   (new state)
+    delta((E,X), b) = (delta1(E, b), delta2(X, b)) = (E,Y)   (new state)
+    delta((O,X), a) = (delta1(O, a), delta2(X, a)) = (E,X)
+    delta((O,X), b) = (delta1(O, b), delta2(X, b)) = (O,Y)   (new state)
+    delta((E,Y), a) = (delta1(E, a), delta2(Y, a)) = (O,X)
+    delta((E,Y), b) = (delta1(E, b), delta2(Y, b)) = (E,Y)
+    delta((O,Y), a) = (delta1(O, a), delta2(Y, a)) = (E,X)
+    delta((O,Y), b) = (delta1(O, b), delta2(Y, b)) = (O,Y)
+
+---- Step 3: final states ----
+  For intersection, (p, q) is final when p is in F1 AND q is in F2.
+  F = {(E,Y)}
+
+---- Step 4: the product DFA for L1 intersect L2 ----
+M = (Q, Sigma, delta, q0, F) where
+  Q     = {(E,X), (O,X), (E,Y), (O,Y)}   (4 states)
+  Sigma = {a, b}
+  q0    = (E,X)
+  F     = {(E,Y)}
+  delta (transition table):
+     | State | a     | b
+  ---+-------+-------+------
+  -> | (E,X) | (O,X) | (E,Y)
+     | (O,X) | (E,X) | (O,Y)
+  *  | (E,Y) | (O,X) | (E,Y)
+     | (O,Y) | (E,X) | (O,Y)
+  (-> marks the start state, * marks a final state)
+
+  Q1 x Q2 has 2 x 2 = 4 pairs; 4 of them are reachable from the start state and were built.
+  L1 intersect L2 is not empty; its shortest string is "b".
+
+---- Verification: L(M) = L(M1) intersect L(M2)? ----
+  Tested all 32767 strings of length 0 to 14: the product DFA accepts a string exactly when both M1 and M2 accept it.
+
+Enter a string to test ('eps' = empty string, 'end' to stop): abab
+  M1: ACCEPTED   M2: ACCEPTED   Product path: (E,X) --a--> (O,X) --b--> (O,Y) --a--> (E,X) --b--> (E,Y)
+  Result: "abab" is ACCEPTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): aab
+  M1: ACCEPTED   M2: ACCEPTED   Product path: (E,X) --a--> (O,X) --a--> (E,X) --b--> (E,Y)
+  Result: "aab" is ACCEPTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): ab
+  M1: REJECTED   M2: ACCEPTED   Product path: (E,X) --a--> (O,X) --b--> (O,Y)
+  Result: "ab" is REJECTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): aa
+  M1: ACCEPTED   M2: REJECTED   Product path: (E,X) --a--> (O,X) --a--> (E,X)
+  Result: "aa" is REJECTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): b
+  M1: ACCEPTED   M2: ACCEPTED   Product path: (E,X) --b--> (E,Y)
+  Result: "b" is ACCEPTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): eps
+  M1: ACCEPTED   M2: REJECTED   Product path: (E,X)
+  Result: eps (the empty string) is REJECTED by L1 intersect L2
+
+Enter a string to test ('eps' = empty string, 'end' to stop): end

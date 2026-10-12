@@ -1,0 +1,119 @@
+======================================================================
+  TASK 1: DFA SIMULATION
+  Decides whether each input string is accepted or rejected by a DFA.
+======================================================================
+Reading input from file: samples/1a_dfa_ends_with_abb.txt
+Enter the states (separated by spaces): A B C D
+Enter the input alphabet (single characters): a b
+Enter the start state: A
+Enter the final states ('none' if there are none): D
+  transition: A a B
+  transition: A b A
+  transition: B a B
+  transition: B b C
+  transition: C a B
+  transition: C b D
+  transition: D a B
+  transition: D b A
+  transition: end
+
+---- The DFA ----
+M = (Q, Sigma, delta, q0, F) where
+  Q     = {A, B, C, D}   (4 states)
+  Sigma = {a, b}
+  q0    = A
+  F     = {D}
+  delta (transition table):
+     | State | a | b
+  ---+-------+---+--
+  -> | A     | B | A
+     | B     | B | C
+     | C     | B | D
+  *  | D     | B | A
+  (-> marks the start state, * marks a final state)
+
+Enter an input string ('eps' = empty string, 'end' to stop): abb
+
+---- Simulating M on w = "abb", |w| = 3 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | a           | delta(A, a) = B | B
+  2    | B             | b           | delta(B, b) = C | C
+  3    | C             | b           | delta(C, b) = D | D
+  Path: A --a--> B --b--> C --b--> D
+  delta*(A, abb) = D, which is a final state (F = {D}).
+  Result: "abb" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): aabb
+
+---- Simulating M on w = "aabb", |w| = 4 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | a           | delta(A, a) = B | B
+  2    | B             | a           | delta(B, a) = B | B
+  3    | B             | b           | delta(B, b) = C | C
+  4    | C             | b           | delta(C, b) = D | D
+  Path: A --a--> B --a--> B --b--> C --b--> D
+  delta*(A, aabb) = D, which is a final state (F = {D}).
+  Result: "aabb" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): babb
+
+---- Simulating M on w = "babb", |w| = 4 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | b           | delta(A, b) = A | A
+  2    | A             | a           | delta(A, a) = B | B
+  3    | B             | b           | delta(B, b) = C | C
+  4    | C             | b           | delta(C, b) = D | D
+  Path: A --b--> A --a--> B --b--> C --b--> D
+  delta*(A, babb) = D, which is a final state (F = {D}).
+  Result: "babb" is ACCEPTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): abba
+
+---- Simulating M on w = "abba", |w| = 4 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | a           | delta(A, a) = B | B
+  2    | B             | b           | delta(B, b) = C | C
+  3    | C             | b           | delta(C, b) = D | D
+  4    | D             | a           | delta(D, a) = B | B
+  Path: A --a--> B --b--> C --b--> D --a--> B
+  delta*(A, abba) = B, which is NOT a final state (F = {D}).
+  Result: "abba" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): ab
+
+---- Simulating M on w = "ab", |w| = 2 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | a           | delta(A, a) = B | B
+  2    | B             | b           | delta(B, b) = C | C
+  Path: A --a--> B --b--> C
+  delta*(A, ab) = C, which is NOT a final state (F = {D}).
+  Result: "ab" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): eps
+
+---- Simulating M on w = eps (the empty string), |w| = 0 ----
+  w is empty, so no symbol is read: the DFA stays in the start state.
+  delta*(A, eps) = A, which is NOT a final state (F = {D}).
+  Result: eps (the empty string) is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): abcb
+
+---- Simulating M on w = "abcb", |w| = 4 ----
+  Step | Current state | Symbol read | Transition      | Next state
+  -----+---------------+-------------+-----------------+-----------
+  1    | A             | a           | delta(A, a) = B | B
+  2    | B             | b           | delta(B, b) = C | C
+  3    | C             | c           | -               | (stop)
+  Path: A --a--> B --b--> C
+  Reason: symbol 'c' (position 3) is not in the input alphabet.
+  Result: "abcb" is REJECTED
+
+Enter an input string ('eps' = empty string, 'end' to stop): end
+
+---- Summary ----
+  Strings tested: 7, accepted: 3, rejected: 4

@@ -1,0 +1,18 @@
+# TASK 2 sample: epsilon-NFA for the language a*b*c*.
+# q0 loops on a, q1 loops on b, q2 loops on c; eps-moves q0 -> q1 -> q2.
+q0 q1 q2
+a b c
+q0
+q2
+q0 a q0
+q0 eps q1
+q1 b q1
+q1 eps q2
+q2 c q2
+end
+aabcc
+abc
+acb
+eps
+ccc
+end
