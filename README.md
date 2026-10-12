@@ -1,6 +1,6 @@
 # FLA Project – Java Implementation
 
-Five Java programs for Formal Languages and Automata:
+Java programs for Formal Languages and Automata:
 
 | # | Task | Program | Method |
 |---|------|---------|--------|
@@ -10,7 +10,6 @@ Five Java programs for Formal Languages and Automata:
 | 4 | Intersection of two DFAs | `DFAIntersection` | Product construction, F = F1 × F2 |
 | 5 | PDA simulation | `PDASimulation` | Search over all configurations, with the stack shown at every step |
 
-Every program prints each step of its algorithm, so the output can be used directly in a report or a viva.
 
 ---
 
@@ -18,20 +17,20 @@ Every program prints each step of its algorithm, so the output can be used direc
 
 ```
 FLA_Project/
-├── src/                       Java source code
-│   ├── DFASimulation.java     Task 1 (main program)
-│   ├── NFAtoDFA.java          Task 2 (main program)
-│   ├── DFAMinimization.java   Task 3 (main program)
-│   ├── DFAIntersection.java   Task 4 (main program)
-│   ├── PDASimulation.java     Task 5 (main program)
-│   ├── DFA.java               DFA class shared by tasks 1–4
-│   ├── NFA.java               NFA class (with ε-transitions) for task 2
-│   ├── InputSource.java       Reads input from a file or the keyboard
-│   ├── InputException.java    Error for invalid input
-│   ├── TablePrinter.java      Prints aligned tables
-│   └── Util.java              Small shared helpers
-├── samples/                   Ready-made input files (2–3 per task)
-├── sample_output/             The output of every program on every sample
+├── src/                       
+│   ├── DFASimulation.java     
+│   ├── NFAtoDFA.java          
+│   ├── DFAMinimization.java  
+│   ├── DFAIntersection.java   
+│   ├── PDASimulation.java     
+│   ├── DFA.java               
+│   ├── NFA.java               
+│   ├── InputSource.java       
+│   ├── InputException.java  
+│   ├── TablePrinter.java      
+│   └── Util.java            
+├── samples/                
+├── sample_output/            
 └── README.md
 ```
 
